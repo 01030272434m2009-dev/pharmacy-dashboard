@@ -1,0 +1,14 @@
+{
+  "BranchName": "مستودع وصيدلية فاقوس الرئيسية",
+  "LastUpdate": "الإثنين 01-06-2026 - 12:30 مساءً",
+  "Stats": {
+    "TotalSales": "24,500",
+    "InvoicesCount": "18",
+    "AnimalCases": "9"
+  },
+  "RecentInvoices": [
+    { "InvoiceNo": "INV-2026-001", "Customer": "أحمد إبراهيم", "Total": "3,500", "Time": "10:15 ص" },
+    { "InvoiceNo": "INV-2026-002", "Customer": "عيادة الماشية بالشرقية", "Total": "12,000", "Time": "11:30 ص" },
+    { "InvoiceNo": "INV-2026-003", "Customer": "مزرعة دواجن فاقوس", "Total": "9,000", "Time": "12:05 م" }
+  ]
+}

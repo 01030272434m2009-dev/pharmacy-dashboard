@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 لوحة المراقبة السحابية للفروع</title>
+    <style>
+        /* نظام الألوان الفلات الاحترافي المتناسق مع برنامج الديسكتوب */
+        :root {
+            --bg-light: #f1f5f9;
+            --brand-dark: #0f172a;
+            --brand-blue: #3b82f6;
+            --brand-emerald: #10b981;
+            --brand-orange: #f97316;
+            --text-dark: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* هيدر ملوكي مهيب */
+        .header {
+            background-color: var(--brand-dark);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 25px;
+        }
+
+        .header h1 { margin: 0; font-size: 20px; font-weight: bold; }
+        .header p { margin: 5px 0 0 0; font-size: 13px; color: #94a3b8; }
+
+        /* شبكة الكروت الإحصائية الفلات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+        }
+
+        .card.blue::after { background-color: var(--brand-blue); }
+        .card.emerald::after { background-color: var(--brand-emerald); }
+        .card.orange::after { background-color: var(--brand-orange); }
+
+        .card-title { font-size: 14px; color: #64748b; margin-bottom: 10px; }
+        .card-value { font-size: 24px; font-weight: bold; color: var(--text-dark); }
+
+        /* جدول عرض البيانات الحية */
+        .table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+
+        .table-container h2 { font-size: 18px; margin-top: 0; margin-bottom: 15px; color: var(--brand-dark); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background-color: #334155;
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e3f0;
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) { background-color: #f8fafc; }
+        
+        .btn-refresh {
+            background-color: var(--brand-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        .btn-refresh:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1 id="branchName">جاري تحميل اسم الفرع...</h1>
+            <p id="lastUpdate">جاري تحديث التوقيت...</p>
+        </div>
+        <button class="btn-refresh" onclick="loadData()">🔄 تحديث البيانات</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="card blue">
+            <div class="card-title">💰 إجمالي مبيعات اليوم</div>
+            <div class="card-value" id="valSales">0 ج.م</div>
+        </div>
+        <div class="card emerald">
+            <div class="card-title">🧾 عدد الفواتير الصادرة</div>
+            <div class="card-value" id="valInvoices">0 فاتورة</div>
+        </div>
+        <div class="card orange">
+            <div class="card-title">🧬 حالات السونار والعيادة</div>
+            <div class="card-value" id="valCases">0 حالة</div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <h2>🧾 آخر الحركات والفواتير الواردة من الفرع</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الفاتورة</th>
+                    <th>العميل / المربي</th>
+                    <th>إجمالي الفاتورة</th>
+                    <th>التوقيت</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #64748b;">جاري سحب البيانات من ملف النوت باد...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                // الكود يقرأ ملف data.json الموجود في نفس المجلد مباشرة
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                const data = await response.json();
+
+                // 1. تحديث نصوص الهيدر
+                document.getElementById('branchName').innerText = "👑 لوحة مراقبة: " + data.BranchName;
+                document.getElementById('lastUpdate').innerText = "آخر مزامنة حية: " + data.LastUpdate;
+
+                // 2. تحديث كروت الأرقام العلوية
+                document.getElementById('valSales').innerText = data.Stats.TotalSales + " ج.م";
+                document.getElementById('valInvoices').innerText = data.Stats.InvoicesCount + " فاتورة";
+                document.getElementById('valCases').innerText = data.Stats.AnimalCases + " حالة";
+
+                // 3. بناء جدول الفواتير
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = ""; // مسح التنبيه المؤقت
+
+                data.RecentInvoices.forEach(inv => {
+                    const row = `<tr>
+                        <td style="font-weight: bold; color: var(--brand-blue);">${inv.InvoiceNo}</td>
+                        <td>${inv.Customer}</td>
+                        <td style="font-weight: bold; color: var(--brand-emerald);">${inv.Total} ج.م</td>
+                        <td style="color: #64748b;">${inv.Time}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+
+            } catch (error) {
+                console.error("خطأ في قراءة ملف النوت باد:", error);
+                alert("لم يتم العثور على ملف data.json أو يوجد خطأ في صياغته!");
+            }
+        }
+
+        // تشغيل الدالة تلقائياً أول ما تفتح الصفحة
+        window.onload = loadData;
+    </script>
+</body>
+</html>
